@@ -26,6 +26,7 @@ public class User {
 	@Size(max = 120)
 	private String password;
 
+	
 	public User() {
 	}
 
