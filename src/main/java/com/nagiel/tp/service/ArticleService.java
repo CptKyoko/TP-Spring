@@ -25,7 +25,6 @@ public class ArticleService {
         return articleRepository.findByUserId(id);
     }
 
-
     public Iterable<Article> getArticles() {
         return articleRepository.findAll();
     }

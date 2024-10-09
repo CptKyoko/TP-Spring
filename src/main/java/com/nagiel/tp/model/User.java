@@ -40,7 +40,7 @@ public class User {
 	@Size(max = 120)
 	private String password;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE) 
 	@JsonBackReference
     private List<Article> articles = new ArrayList<>();
 	
