@@ -1,0 +1,9 @@
+com/nagiel/tp/model/Article.class
+com/nagiel/tp/controller/UserController.class
+com/nagiel/tp/model/User.class
+com/nagiel/tp/service/ArticleService.class
+com/nagiel/tp/TpApplication.class
+com/nagiel/tp/repository/ArticleRepository.class
+com/nagiel/tp/repository/UserRepository.class
+com/nagiel/tp/controller/ArticleController.class
+com/nagiel/tp/service/UserService.class

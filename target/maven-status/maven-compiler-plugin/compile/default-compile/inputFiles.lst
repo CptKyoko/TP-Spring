@@ -1,0 +1,9 @@
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/TpApplication.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/controller/ArticleController.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/controller/UserController.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/model/Article.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/model/User.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/repository/ArticleRepository.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/repository/UserRepository.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/service/ArticleService.java
+/Users/guillaume/Documents/spring-project/tp/src/main/java/com/nagiel/tp/service/UserService.java
