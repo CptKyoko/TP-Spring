@@ -21,9 +21,6 @@ jobs:
       - name: Build
         run: mvn compile
 
-      - name: Package
-        run: mvn package
-
   test:
     runs-on: ubuntu-latest
     needs: build
