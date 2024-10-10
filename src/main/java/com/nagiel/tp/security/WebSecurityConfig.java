@@ -86,7 +86,8 @@ public class WebSecurityConfig {
 					cors.setMaxAge(3600L);
 					return cors;
 
-				})).authorizeHttpRequests(
+				}))
+				.authorizeHttpRequests(
 						auth -> auth.requestMatchers(PathRequest.toH2Console()).permitAll().requestMatchers(request -> {
 							String path = request.getServletPath();
 							return path.startsWith("/api/auth/signup");
