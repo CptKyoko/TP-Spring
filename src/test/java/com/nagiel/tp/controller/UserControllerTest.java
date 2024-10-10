@@ -36,7 +36,6 @@ public class UserControllerTest {
         // Données de test
         String requestBody = "{\"username\": \"Bob\", \"email\": \"b@b.fr\", \"password\": \"secret\"}";
         
-        // Exécution de la requête POST
         mockMvc.perform(post("/user")
                 .content(requestBody)
                 .contentType("application/json"))
