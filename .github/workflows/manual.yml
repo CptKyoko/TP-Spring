@@ -18,11 +18,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and Package
-        run: mvn package -DskipTests
-
-      - name: List files in target directory (debug)
-        run: ls -al target/
+      - name: Test
+        run: mvn test
 
   deploy:
     runs-on: ubuntu-latest
