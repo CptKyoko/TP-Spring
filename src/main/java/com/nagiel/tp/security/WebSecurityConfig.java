@@ -95,8 +95,7 @@ public class WebSecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll()
 						.requestMatchers("/api/test/all").permitAll()
 						.anyRequest().authenticated());
-		// Correction de la console de base de données H2 : Refus d'afficher ' dans un
-		// cadre parce que la valeur 'X-Frame-Options' est 'deny'.
+
 		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

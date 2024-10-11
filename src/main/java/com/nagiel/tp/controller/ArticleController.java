@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nagiel.tp.model.Article;
 import com.nagiel.tp.model.User;
+import com.nagiel.tp.repository.UserRepository;
 import com.nagiel.tp.service.ArticleService;
 
 @RestController
@@ -24,6 +28,9 @@ public class ArticleController {
 
 	@Autowired
     private ArticleService articleService;
+	
+	@Autowired
+    private UserRepository userRepository;
 	
     /**
     * Read - Get all articles
@@ -41,6 +48,13 @@ public class ArticleController {
 	 */
 	@PostMapping("/article")
 	public Article createArticle(@RequestBody Article article) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String username = authentication.getName();
+
+	    User user = userRepository.findByUsername(username)
+	            .orElseThrow(() -> new RuntimeException("Error: User is not found."));
+
+	    article.setUser(user);
 		article.setDate(new Date());
 		return articleService.saveArticle(article);
 	}
@@ -77,6 +91,7 @@ public class ArticleController {
 	 * @return
 	 */
 	@PutMapping("/article/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or @articleService.isArticleOwner(#id, principal.username)")
 	public Article updateArticle(@PathVariable final Long id, @RequestBody Article article) {
 		Optional<Article> e = articleService.getArticle(id);
 		if(e.isPresent()) {
@@ -90,10 +105,7 @@ public class ArticleController {
 			if(content != null) {
 				currentArticle.setContent(content);
 			}
-			User user = article.getUser();
-			if(user != null) {
-				currentArticle.setUser(user);
-			}
+
 			articleService.saveArticle(currentArticle);
 			return currentArticle;
 		} else {
@@ -106,6 +118,7 @@ public class ArticleController {
 	 * @param id - The id of the Article to delete
 	 */
 	@DeleteMapping("/article/{id}")
+	@PreAuthorize("hasRole('ADMIN') or @articleService.isArticleOwner(#id, principal.username)")
 	public void deleteArticle(@PathVariable final Long id) {
 		articleService.deleteArticle(id);
 	}
