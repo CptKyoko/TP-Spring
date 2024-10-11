@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -44,8 +45,8 @@ public class WebSecurityConfig {
 		return new AuthTokenFilter();
 	}
 
-    @Bean
-    DaoAuthenticationProvider authenticationProvider() {
+	@Bean
+	DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
 		authProvider.setUserDetailsService(userDetailsService);
@@ -54,18 +55,18 @@ public class WebSecurityConfig {
 		return authProvider;
 	}
 
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+	@Bean
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
+	@Bean
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http.csrf(AbstractHttpConfigurer::disable)
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
@@ -86,13 +87,14 @@ public class WebSecurityConfig {
 					cors.setMaxAge(3600L);
 					return cors;
 
-				}))
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers(PathRequest.toH2Console()).permitAll().requestMatchers(request -> {
-							String path = request.getServletPath();
-							return path.startsWith("/api/auth/signup");
-						}).permitAll().requestMatchers("/api/auth/**").permitAll().requestMatchers("/api/**")
-								.permitAll().anyRequest().authenticated());
+				})).authorizeHttpRequests(
+						auth -> auth
+						.requestMatchers(PathRequest.toH2Console()).permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/articles").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll()
+						.requestMatchers("/api/test/all").permitAll()
+						.anyRequest().authenticated());
 		// Correction de la console de base de données H2 : Refus d'afficher ' dans un
 		// cadre parce que la valeur 'X-Frame-Options' est 'deny'.
 		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
