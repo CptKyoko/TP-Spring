@@ -60,6 +60,7 @@ public class UserController {
 	 * @param id The id of the User
 	 * @return An User object full filled
 	 */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or #id == principal.id")
 	@GetMapping("/user/{id}")
 	public User getUser(@PathVariable final Long id) {
 		Optional<User> User = userService.getUser(id);
