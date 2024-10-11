@@ -60,8 +60,8 @@ public class UserController {
 	 * @param id The id of the User
 	 * @return An User object full filled
 	 */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or #id == principal.id")
 	@GetMapping("/user/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or #id == principal.id")
 	public User getUser(@PathVariable final Long id) {
 		Optional<User> User = userService.getUser(id);
 		if(User.isPresent()) {
@@ -149,7 +149,8 @@ public class UserController {
 	 */
 	@DeleteMapping("/user/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public void deleteUser(@PathVariable final Long id) {
+	public ResponseEntity<?> deleteUser(@PathVariable final Long id) {
 		userService.deleteUser(id);
+		return ResponseEntity.ok(new MessageResponse("User delete successfully!"));
 	}
 }
