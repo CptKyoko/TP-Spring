@@ -1,5 +1,10 @@
 package com.nagiel.tp.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +18,10 @@ public class Role {
 	@Column(length = 20)
 	private ERole name;
 
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<User> users = new HashSet<>();
+    
 	public Role() {
 
 	}
@@ -35,6 +44,14 @@ public class Role {
 
 	public void setName(ERole name) {
 		this.name = name;
+	}
+
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 
 }
