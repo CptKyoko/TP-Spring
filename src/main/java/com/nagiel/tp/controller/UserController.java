@@ -1,8 +1,12 @@
 package com.nagiel.tp.controller;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +16,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.nagiel.tp.model.ERole;
+import com.nagiel.tp.model.Role;
 import com.nagiel.tp.model.User;
+import com.nagiel.tp.payload.request.PutUserRequest;
+import com.nagiel.tp.payload.response.MessageResponse;
+import com.nagiel.tp.repository.RoleRepository;
+import com.nagiel.tp.repository.UserRepository;
 import com.nagiel.tp.service.UserService;
 
 
@@ -24,6 +37,14 @@ public class UserController {
 	@Autowired
     private UserService userService;
 	
+    @Autowired
+    private RoleRepository roleRepository;
+
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	PasswordEncoder encoder;
     /**
     * Read - Get all users
     * @return - An Iterable object of User full filled
@@ -33,16 +54,6 @@ public class UserController {
     public Iterable<User> getUsers() {
         return userService.getUsers();
     }
-    
-	/**
-	 * Create - Add a new User
-	 * @param User An object User
-	 * @return The User object saved
-	 */
-	@PostMapping("/user")
-	public User createUser(@RequestBody User User) {
-		return userService.saveUser(User);
-	}
 	
 	/**
 	 * Read - Get one User 
@@ -65,30 +76,70 @@ public class UserController {
 	 * @param User - The User object updated
 	 * @return
 	 */
-	@PutMapping("/user/{id}")
-	public User updateUser(@PathVariable final Long id, @RequestBody User user) {
-		Optional<User> e = userService.getUser(id);
-		if(e.isPresent()) {
-			User currentUser = e.get();
-			
-			String username = user.getUsername();
-			if(username != null) {
-				currentUser.setUsername(username);
-			}
-			String email = user.getEmail();
-			if(email != null) {
-				currentUser.setEmail(email);
-			}
-			String password = user.getPassword();
-			if(password != null) {
-				currentUser.setPassword(password);;
-			}
-			userService.saveUser(currentUser);
-			return currentUser;
-		} else {
-			return null;
-		}
-	}
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
+    @PutMapping("/user/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable final Long id, @RequestBody PutUserRequest user) {
+        Optional<User> optionalUser = userService.getUser(id);
+        
+        if (optionalUser.isPresent()) {
+            User currentUser = optionalUser.get();
+
+            if (user.getUsername() != null) {
+        		if (userRepository.existsByUsername(user.getUsername())) {
+        			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+        		}
+                currentUser.setUsername(user.getUsername());
+            }
+
+            if (user.getEmail() != null) {
+        		if (userRepository.existsByEmail(user.getEmail())) {
+        			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+        		}
+                currentUser.setEmail(user.getEmail());
+            }
+
+            if (user.getPassword() != null) {
+                currentUser.setPassword(encoder.encode(user.getPassword()));
+            }
+
+            if (user.getRole() != null && !user.getRole().isEmpty()) {
+            	Set<String> strRoles = user.getRole();
+                Set<Role> roles = new HashSet<>();
+
+                if (strRoles == null) {
+                    Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+                } else {
+                    strRoles.forEach(role -> {
+                        switch (role) {
+                            case "admin":
+                                Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(adminRole);
+                                break;
+                            case "mod":
+                                Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(modRole);
+                                break;
+                            default:
+                                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(userRole);
+                        }
+                    });
+                }
+
+                currentUser.setRoles(roles);
+            }
+
+            userService.saveUser(currentUser);
+            return ResponseEntity.ok(new MessageResponse("User modify successfully!"));
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé");
+        }
+    }
 	
 	
 	/**
@@ -96,6 +147,7 @@ public class UserController {
 	 * @param id - The id of the User to delete
 	 */
 	@DeleteMapping("/user/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public void deleteUser(@PathVariable final Long id) {
 		userService.deleteUser(id);
 	}
