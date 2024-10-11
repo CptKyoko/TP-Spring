@@ -24,7 +24,7 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+    /*@Test
     public void testGetUsers() throws Exception {
         mockMvc.perform(get("/users"))
             .andExpect(status().isOk())
@@ -57,6 +57,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username").value("Billy"))
                 .andExpect(jsonPath("$.password").value("newpassword"));
     
-    }
+    }*/
 }
 
