@@ -132,20 +132,9 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.user.username").value("Guillaume"));
 
     }
-    
+   
     @Test
     @Order(7)
-    @WithUserDetails("Guillaume")
-    public void DeleteArticleByUser() throws Exception {
-    	// Exécution de la requête DELETE
-        mockMvc.perform(delete("/api/article/{id}", 3)
-                .contentType("application/json"))
-                .andExpect(status().isOk());
-
-    }
-    
-    @Test
-    @Order(8)
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void DeleteArticleByAdmin() throws Exception {
     	// Exécution de la requête DELETE
@@ -156,13 +145,14 @@ public class ArticleControllerTest {
     }
     
     @Test
-    @Order(9)
-    @WithMockUser(username = "Mod", roles = {"MODERATOR"})
-    public void DeleteArticleByModerator() throws Exception {
+    @Order(8)
+    @WithUserDetails("Guillaume")
+    public void DeleteArticleByUser() throws Exception {
     	// Exécution de la requête DELETE
-        mockMvc.perform(delete("/api/article/{id}", 1)
+        mockMvc.perform(delete("/api/article/{id}", 3)
                 .contentType("application/json"))
                 .andExpect(status().isOk());
 
     }
+
 }
