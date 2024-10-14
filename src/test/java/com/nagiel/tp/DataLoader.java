@@ -1,10 +1,14 @@
 package com.nagiel.tp;
 
+import java.util.Optional;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.nagiel.tp.model.Article;
 import com.nagiel.tp.model.User;
+import com.nagiel.tp.repository.ArticleRepository;
 import com.nagiel.tp.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -13,9 +17,11 @@ import jakarta.transaction.Transactional;
 @Profile("test")
 public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
-
-    public DataLoader(UserRepository userRepository) {
+    private final ArticleRepository articleRepository;
+    
+    public DataLoader(UserRepository userRepository, ArticleRepository articleRepository) {
         this.userRepository = userRepository;
+        this.articleRepository = articleRepository;
     }
 
     @Transactional
@@ -43,5 +49,19 @@ public class DataLoader implements CommandLineRunner {
         } else {
             System.out.println("User 'testUserDelete' already exists.");
         }
+        
+        Optional<User> optionalUser = userRepository.findById((long) 1);
+        
+        if (optionalUser.isPresent() && !articleRepository.findById((long) 1).isPresent()) {
+            User user = optionalUser.get(); 
+            articleRepository.save(new Article("Titre test 1", "Content 1", user));
+        }
+        
+        if (optionalUser.isPresent() && !articleRepository.findById((long) 2).isPresent()) {
+            User user = optionalUser.get(); 
+            articleRepository.save(new Article("Titre test 2", "Content 2", user));
+        }
+        
+        
     }
 }

@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,9 +26,6 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private AuthenticationManager authenticationManager;
-    
     @Test
     @WithMockUser(username = "Bob", roles = {"ADMIN"})
     public void testGetUsers() throws Exception {
@@ -40,7 +35,7 @@ public class UserControllerTest {
     }
     
     @Test
-    @WithMockUser(username = "Bob", roles = {"ADMIN"})
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void testPutUserWithAdmin() throws Exception {
         // Données de test
         String requestBody = "{\"username\": \"Billy\", \"email\": \"a@a.fr\", \"password\": \"newpassword\"}";
@@ -71,7 +66,7 @@ public class UserControllerTest {
     }
     
     @Test
-    @WithMockUser(username = "Bob", roles = {"ADMIN"})
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void DeleteUser() throws Exception {
 
      // Exécution de la requête PUT
