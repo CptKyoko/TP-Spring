@@ -38,6 +38,7 @@ public class ArticleService {
         return savedArticle;
     }
     
+    // Vérifie si l'utilisateur connecté est le propriétaire de l'article
     public boolean isArticleOwner(Long articleId, String username) {
         Optional<Article> article = this.getArticle(articleId);
         return article.isPresent() && article.get().getUser().getUsername().equals(username);
