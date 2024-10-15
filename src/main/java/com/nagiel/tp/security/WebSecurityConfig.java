@@ -89,6 +89,7 @@ public class WebSecurityConfig {
 
 				})).authorizeHttpRequests(
 						auth -> auth
+						.requestMatchers("/h2-ui/**").permitAll()
 						.requestMatchers(PathRequest.toH2Console()).permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/api/articles").permitAll()
