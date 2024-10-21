@@ -75,7 +75,9 @@ public class WebSecurityConfig {
 
 	            CorsConfiguration cors = new CorsConfiguration();
 	            // Ajout de ton domaine de production et de localhost pour les devs
+
 	            String[] allowedOrigins = { "capacitor://localhost", "https://localhost", "http://localhost:8100" };
+
 	            // Ajout de l'en-tête Authorization si nécessaire
 	            String[] exposedHeaders = { HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "Authorization" };
 
