@@ -68,38 +68,40 @@ public class WebSecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-		http.csrf(AbstractHttpConfigurer::disable)
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.cors(c -> c.configurationSource(request -> {
+	    http.csrf(AbstractHttpConfigurer::disable)
+	        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	        .cors(c -> c.configurationSource(request -> {
 
-					CorsConfiguration cors = new CorsConfiguration();
-					String[] allowedOrigins = { "https://localhost", "http://localhost:8100" };
-					String[] exposedHeaders = { HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
-							HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN };
+	            CorsConfiguration cors = new CorsConfiguration();
+	            // Ajout de ton domaine de production et de localhost pour les devs
+	            String[] allowedOrigins = { "https://localhost", "http://localhost:8100", "https://tp-spring.onrender.com" };
+	            // Ajout de l'en-tête Authorization si nécessaire
+	            String[] exposedHeaders = { HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "Authorization" };
 
-					cors.applyPermitDefaultValues();
-					cors.setAllowedOrigins(List.of(allowedOrigins));
-					cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-					cors.setAllowedHeaders(List.of("*"));
-					cors.setExposedHeaders(List.of(exposedHeaders));
-					cors.setAllowCredentials(true);
-					cors.setMaxAge(3600L);
-					return cors;
+	            cors.applyPermitDefaultValues(); // Facultatif, à modifier si nécessaire
+	            cors.setAllowedOrigins(List.of(allowedOrigins));
+	            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	            cors.setAllowedHeaders(List.of("*"));
+	            cors.setExposedHeaders(List.of(exposedHeaders));
+	            cors.setAllowCredentials(true);
+	            cors.setMaxAge(3600L);
+	            return cors;
 
-				})).authorizeHttpRequests(
-						auth -> auth
-						.requestMatchers(PathRequest.toH2Console()).permitAll()
-						.requestMatchers("/api/auth/**").permitAll()
-						.requestMatchers("/api/articles").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll()
-						.requestMatchers("/api/test/all").permitAll()
-						.anyRequest().authenticated());
+	        }))
+	        .authorizeHttpRequests(auth -> auth
+	            .requestMatchers(PathRequest.toH2Console()).permitAll()
+	            .requestMatchers("/api/auth/**").permitAll()
+	            .requestMatchers("/api/articles").permitAll()
+	            .requestMatchers(HttpMethod.GET, "/api/article/**").permitAll()
+	            .requestMatchers("/api/test/all").permitAll()
+	            .anyRequest().authenticated());
 
-		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-		http.authenticationProvider(authenticationProvider());
-		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+	    // Correction de la console de base de données H2
+	    http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+	    http.authenticationProvider(authenticationProvider());
+	    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-		return http.build();
+	    return http.build();
 	}
 }
