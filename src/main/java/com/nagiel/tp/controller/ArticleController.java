@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nagiel.tp.model.Article;
-import com.nagiel.tp.model.User;
-import com.nagiel.tp.repository.UserRepository;
 import com.nagiel.tp.service.ArticleService;
 
 @RestController
@@ -28,10 +24,7 @@ public class ArticleController {
 
 	@Autowired
     private ArticleService articleService;
-	
-	@Autowired
-    private UserRepository userRepository;
-	
+
     /**
     * Read - Get all articles
     * @return - An Iterable object of Article full filled
@@ -48,13 +41,6 @@ public class ArticleController {
 	 */
 	@PostMapping("/article")
 	public Article createArticle(@RequestBody Article article) {
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String username = authentication.getName();
-
-	    User user = userRepository.findByUsername(username)
-	            .orElseThrow(() -> new RuntimeException("Error: User is not found."));
-
-	    article.setUser(user);
 		article.setDate(new Date());
 		return articleService.saveArticle(article);
 	}
