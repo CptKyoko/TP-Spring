@@ -76,16 +76,17 @@ public class WebSecurityConfig {
 	            CorsConfiguration cors = new CorsConfiguration();
 	            // Ajout de ton domaine de production et de localhost pour les devs
 
-	            String[] allowedOrigins = { "capacitor://localhost", "https://localhost", "http://localhost:8100" };
-
-	            // Ajout de l'en-tête Authorization si nécessaire
-	            String[] exposedHeaders = { HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "Authorization" };
-
+	            String[] allowedOrigins = { 
+	            		"capacitor://localhost", 
+	            		"https://tp-spring.onrender.com", 
+	            		"https://localhost", 
+	            		"http://localhost:8100" 
+	            		};
 	            cors.applyPermitDefaultValues(); // Facultatif, à modifier si nécessaire
 	            cors.setAllowedOrigins(List.of(allowedOrigins));
 	            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	            cors.setAllowedHeaders(List.of("*"));
-	            cors.setExposedHeaders(List.of(exposedHeaders));
+	            cors.setExposedHeaders(List.of("Authorization"));
 	            cors.setAllowCredentials(true);
 	            cors.setMaxAge(3600L);
 	            return cors;
