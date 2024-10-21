@@ -42,15 +42,26 @@ public class JwtUtils {
 	}
 
 	public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-		String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-		ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
-				.build();
-		return cookie;
+	    String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+	    ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
+	        .path("/") // Changer le chemin en "/" pour qu'il soit accessible partout
+	        .maxAge(24 * 60 * 60) // Durée de vie de 24 heures
+	        .httpOnly(true) // Empêche l'accès JavaScript
+	        .secure(true) // S'assurer que cela soit vrai si tu es en HTTPS
+	        .sameSite("None") // Permettre le partage cross-origin
+	        .build();
+	    return cookie;
 	}
 
 	public ResponseCookie getCleanJwtCookie() {
-		ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
-		return cookie;
+	    ResponseCookie cookie = ResponseCookie.from(jwtCookie, null)
+	        .path("/") // S'assurer que le chemin est "/" pour qu'il soit accessible
+	        .maxAge(0) // Durée de vie nulle pour supprimer le cookie
+	        .httpOnly(true)
+	        .secure(true) // Assurez-vous que cela soit vrai si tu es en HTTPS
+	        .sameSite("None") // Permettre le partage cross-origin
+	        .build();
+	    return cookie;
 	}
 
 	public String getUserNameFromJwtToken(String token) {
