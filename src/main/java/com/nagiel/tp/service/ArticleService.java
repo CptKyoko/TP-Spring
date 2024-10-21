@@ -37,4 +37,9 @@ public class ArticleService {
     	Article savedArticle = articleRepository.save(article);
         return savedArticle;
     }
+    
+    public boolean isArticleOwner(Long articleId, String username) {
+        Optional<Article> article = this.getArticle(articleId);
+        return article.isPresent() && article.get().getUser().getUsername().equals(username);
+    }
 }
